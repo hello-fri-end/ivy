@@ -17,7 +17,6 @@ Experimental
    experimental/prelu.rst
    experimental/thresholded_relu.rst
    experimental/relu6.rst
-   experimental/batch_norm.rst
    experimental/msort.rst
    experimental/lexsort.rst
    experimental/median.rst
@@ -78,6 +77,7 @@ Experimental
    experimental/frexp.rst
    experimental/isin.rst
    experimental/l2_normalize.rst
+   experimental/batch_norm.rst
    experimental/instance_norm.rst
    experimental/lp_normalize.rst
    experimental/is_native_dtype.rst

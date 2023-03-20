@@ -14,6 +14,7 @@ Norms
    :caption: Norms
 
    norms/l2_normalize.rst
+   norms/batch_norm.rst
    norms/instance_norm.rst
    norms/lp_normalize.rst
 
