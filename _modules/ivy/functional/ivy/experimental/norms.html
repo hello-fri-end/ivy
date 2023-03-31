@@ -532,26 +532,49 @@ document.write(`
     <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ivy</span><span class="o">.</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ivy</span><span class="o">.</span><span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Applies batch normalization to the input array.</span>
+<span class="sd">    Applies batch normalization to the input array and returns the normalized input,</span>
+<span class="sd">    running mean and running variance arrays as output. If ``training == False``,</span>
+<span class="sd">    the mean and variance arrays passed as input are used for normalization</span>
+<span class="sd">    and the same arrays are returned as running mean and running variance</span>
+<span class="sd">    respectively. However, when ``training ==True``, this function computes the</span>
+<span class="sd">    batch mean and batch variance which is then used for normalization.In this case,</span>
+<span class="sd">    the function returns the running mean and running variance calculated</span>
+<span class="sd">    using the following formula:</span>
+
+<span class="sd">    running_mean = (1 - momentum) * running_mean + momentum * batch_mean</span>
+<span class="sd">    running_var = (1 - momentum) * running_var + momentum * frac{n}{n-1} * batch_var</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x</span>
-<span class="sd">        Input array of shape (N,C,S), where N is the batch dimension, C is the feature</span>
-<span class="sd">        dimension and S corresponds to the following spatial dimensions.</span>
+<span class="sd">        Input array of shape (N, *S, C), where N is the batch dimension,</span>
+<span class="sd">        *S corresponds to any number of spatial dimensions and</span>
+<span class="sd">         C corresponds to the channel dimension.</span>
 <span class="sd">    mean</span>
-<span class="sd">        A mean array for the input&#39;s normalization.</span>
+<span class="sd">        Mean array used for input&#39;s normalization. If ``training=True``</span>
+<span class="sd">        then it must be one dimensional with size equal to the size of</span>
+<span class="sd">        channel dimension C. If ``training=False`` then it can be of any</span>
+<span class="sd">        shape broadcastble to the input shape.</span>
 <span class="sd">    variance</span>
-<span class="sd">        A variance array for the input&#39;s normalization.</span>
+<span class="sd">        Variance array for the input&#39;s normalization. If ``training=True``</span>
+<span class="sd">        then it must be one dimensional with size equal to the size of</span>
+<span class="sd">        channel dimension C. If ``training=False`` then it can be of any shape</span>
+<span class="sd">        broadcastble to the input shape.</span>
 <span class="sd">    offset</span>
 <span class="sd">        An offset array. If present, will be added to the normalized input.</span>
+<span class="sd">        If ``training=True`` then it must be one dimensional with size equal</span>
+<span class="sd">        to the size of channel dimension C. If ``training=False`` then it can</span>
+<span class="sd">        be of any shape broadcastble to the input shape.</span>
 <span class="sd">    scale</span>
 <span class="sd">        A scale array. If present, the scale is applied to the normalized input.</span>
+<span class="sd">        If ``training=True`` then it must be one dimensional with size equal to</span>
+<span class="sd">        the size of channel dimension C. If ``training=False`` then it can be of</span>
+<span class="sd">        any shape broadcastble to the input shape.</span>
 <span class="sd">    training</span>
 <span class="sd">        If true, calculate and use the mean and variance of `x`. Otherwise, use the</span>
 <span class="sd">        provided `mean` and `variance`.</span>
 <span class="sd">    eps</span>
-<span class="sd">        A small float number to avoid dividing by -1.</span>
+<span class="sd">        A small float number to avoid dividing by 0.</span>
 <span class="sd">    momentum</span>
 <span class="sd">         the value used for the running_mean and running_var computation.</span>
 <span class="sd">          Default value is 0.1.</span>
@@ -609,26 +632,49 @@ document.write(`
     <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ivy</span><span class="o">.</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Applies instance normalization to the input array.</span>
+<span class="sd">    Applies instance normalization to the input array and returns the normalized input,</span>
+<span class="sd">    running mean and running variance arrays as output. If ``training == False``,</span>
+<span class="sd">    the mean and variance arrays passed as input are used for normalization</span>
+<span class="sd">    and the same arrays are returned as running mean and running variance</span>
+<span class="sd">    respectively. However, when ``training ==True``, this function computes the</span>
+<span class="sd">    mean and variance across the spatial dimensions which is then used for</span>
+<span class="sd">    normalization.In this case, the function returns the running mean and</span>
+<span class="sd">    running variance calculated using the following formula:</span>
+
+<span class="sd">    running_mean = (1 - momentum) * running_mean + momentum * batch_mean</span>
+<span class="sd">    running_var = (1 - momentum) * running_var + momentum * frac{n}{n-1} * batch_var</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x</span>
-<span class="sd">        Input array of shape (N,C,S), where N is the batch dimension, C is the feature</span>
-<span class="sd">        dimension and S corresponds to the following spatial dimensions.</span>
+<span class="sd">        Input array of shape (N, *S, C), where N is the batch dimension,</span>
+<span class="sd">        *S corresponds to any number of spatial dimensions and</span>
+<span class="sd">         C corresponds to the channel dimension.</span>
 <span class="sd">    mean</span>
-<span class="sd">        A mean array for the input&#39;s normalization.</span>
+<span class="sd">        Mean array used for input&#39;s normalization. If ``training=True``</span>
+<span class="sd">        then it must be one dimensional with size equal to the size of</span>
+<span class="sd">        channel dimension C. If ``training=False`` then it can be of any</span>
+<span class="sd">        shape broadcastble to the input shape.</span>
 <span class="sd">    variance</span>
-<span class="sd">        A variance array for the input&#39;s normalization.</span>
+<span class="sd">        Variance array for the input&#39;s normalization. If ``training=True``</span>
+<span class="sd">        then it must be one dimensional with size equal to the size of</span>
+<span class="sd">        channel dimension C. If ``training=False`` then it can be of any shape</span>
+<span class="sd">        broadcastble to the input shape.</span>
 <span class="sd">    offset</span>
 <span class="sd">        An offset array. If present, will be added to the normalized input.</span>
+<span class="sd">        If ``training=True`` then it must be one dimensional with size equal</span>
+<span class="sd">        to the size of channel dimension C. If ``training=False`` then it can</span>
+<span class="sd">        be of any shape broadcastble to the input shape.</span>
 <span class="sd">    scale</span>
 <span class="sd">        A scale array. If present, the scale is applied to the normalized input.</span>
+<span class="sd">        If ``training=True`` then it must be one dimensional with size equal to</span>
+<span class="sd">        the size of channel dimension C. If ``training=False`` then it can be of</span>
+<span class="sd">        any shape broadcastble to the input shape.</span>
 <span class="sd">    training</span>
 <span class="sd">        If true, calculate and use the mean and variance of `x`. Otherwise, use the</span>
 <span class="sd">        provided `mean` and `variance`.</span>
 <span class="sd">    eps</span>
-<span class="sd">        A small float number to avoid dividing by -1.</span>
+<span class="sd">        A small float number to avoid dividing by 0.</span>
 <span class="sd">    momentum</span>
 <span class="sd">         the value used for the running_mean and running_var computation.</span>
 <span class="sd">          Default value is 0.1.</span>
@@ -639,7 +685,7 @@ document.write(`
 <span class="sd">    -------</span>
 <span class="sd">    ret</span>
 <span class="sd">         Tuple of arrays containing</span>
-<span class="sd">          the normalized input, running mean, and running variance.</span>
+<span class="sd">          the normalized input, running_mean, and running_variance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">C</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
