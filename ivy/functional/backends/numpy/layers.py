@@ -187,6 +187,7 @@ def conv2d(
     *,
     data_format: str = "NHWC",
     dilations: Union[int, Tuple[int, int]] = 1,
+    feature_group_count: Optional[int] = 1,
     out: Optional[np.ndarray] = None,
 ) -> np.ndarray:
     strides = [strides] * 2 if isinstance(strides, int) else strides
@@ -211,20 +212,33 @@ def conv2d(
         x.strides[2],
         x.strides[3],
     )
-    # B x OH x OW x KH x KW x I
-    sub_matrices = np.lib.stride_tricks.as_strided(
-        x, new_shape, new_strides, writeable=False
-    )
-    # B x OH x OW x KH x KW x I x O
-    sub_matrices_w_output_dim = np.tile(
-        np.expand_dims(sub_matrices, -1), [1] * 6 + [output_dim]
-    )
-    # B x OH x OW x KH x KW x I x O
-    mult = sub_matrices_w_output_dim * filters.reshape(
-        [1] * 3 + filter_shape + [input_dim, output_dim]
-    )
-    # B x OH x OW x O
-    res = np.sum(mult, (3, 4, 5))
+    res = []
+    for i, j in zip(
+        range(0, x_shape[-1], input_dim),
+        range(0, output_dim, output_dim // feature_group_count),
+    ):
+        sliced_x = x[..., i : i + input_dim]
+        sliced_filters = filters[..., j : j + output_dim // feature_group_count]
+        normal_strides = [sliced_x.strides[i] for i in range(1, 4)]
+        changed_strides = [sliced_x.strides[i] * strides[i - 1] for i in range(1, 3)]
+        new_strides = (x.strides[0], *changed_strides, *normal_strides)
+
+        # B x OH x OW x KH x KW x I
+        sub_matrices = np.lib.stride_tricks.as_strided(
+            sliced_x, new_shape, new_strides, writeable=False
+        )
+        # B x OH x OW x KH x KW x I x O
+        sub_matrices_w_output_dim = np.tile(
+            np.expand_dims(sub_matrices, -1),
+            [1] * 6 + [output_dim // feature_group_count],
+        )
+        # B x OH x OW x KH x KW x I x O
+        mult = sub_matrices_w_output_dim * sliced_filters.reshape(
+            [1] * 3 + filter_shape + [input_dim, output_dim // feature_group_count]
+        )
+        # B x OH x OW x O
+        res.append(np.sum(mult, tuple([i for i in range(3, 6)])))
+    res = np.concatenate(res, axis=-1)
 
     if data_format == "NCHW":
         return np.transpose(res, (0, 3, 1, 2))

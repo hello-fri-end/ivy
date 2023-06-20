@@ -1226,6 +1226,7 @@ class _ContainerWithLayers(ContainerBase):
         *,
         data_format: str = "NHWC",
         dilations: Union[int, Tuple[int, int]] = 1,
+        feature_group_count: Optional[int] = 1,
         key_chains: Optional[Union[List[str], Dict[str, str]]] = None,
         to_apply: bool = True,
         prune_unapplied: bool = False,
@@ -1252,6 +1253,9 @@ class _ContainerWithLayers(ContainerBase):
             "NHWC" or "NCHW". Defaults to "NHWC".
         dilations
             The dilation factor for each dimension of input. (Default value = 1)
+        feature_group_count
+            split input into groups, in_channels should be divisible by the
+            number of groups. (Default value = 1)
         key_chains
             The key-chains to apply or not apply the method to. Default is ``None``.
         to_apply
@@ -1294,6 +1298,7 @@ class _ContainerWithLayers(ContainerBase):
             padding,
             data_format=data_format,
             dilations=dilations,
+            feature_group_count=feature_group_count,
             key_chains=key_chains,
             to_apply=to_apply,
             prune_unapplied=prune_unapplied,
@@ -1310,6 +1315,7 @@ class _ContainerWithLayers(ContainerBase):
         *,
         data_format: str = "NHWC",
         dilations: Union[int, Tuple[int, int]] = 1,
+        feature_group_count: Optional[int] = 1,
         key_chains: Optional[Union[List[str], Dict[str, str]]] = None,
         to_apply: bool = True,
         prune_unapplied: bool = False,
@@ -1336,6 +1342,9 @@ class _ContainerWithLayers(ContainerBase):
             "NHWC" or "NCHW". Defaults to "NHWC".
         dilations
             The dilation factor for each dimension of input. (Default value = 1)
+        feature_group_count
+            split input into groups, in_channels should be divisible by the
+            number of groups. (Default value = 1)
         key_chains
             The key-chains to apply or not apply the method to. Default is ``None``.
         to_apply
@@ -1377,6 +1386,7 @@ class _ContainerWithLayers(ContainerBase):
             padding,
             data_format=data_format,
             dilations=dilations,
+            feature_group_count=feature_group_count,
             key_chains=key_chains,
             to_apply=to_apply,
             prune_unapplied=prune_unapplied,

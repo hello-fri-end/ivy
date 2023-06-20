@@ -195,6 +195,7 @@ def conv2d(
     *,
     data_format: str = "NHWC",
     dilations: Union[int, Tuple[int, int]] = 1,
+    feature_group_count: Optional[int] = 1,
     out: Optional[torch.Tensor] = None,
 ) -> torch.Tensor:
     if data_format == "NHWC":
@@ -203,7 +204,9 @@ def conv2d(
     x, padding = _pad_before_conv(
         x, filters, strides, padding, 2, dilations, "channel_first"
     )
-    res = torch.nn.functional.conv2d(x, filters, None, strides, padding, dilations)
+    res = torch.nn.functional.conv2d(
+        x, filters, None, strides, padding, dilations, groups=feature_group_count
+    )
     if data_format == "NHWC":
         return res.permute(0, 2, 3, 1)
     return res

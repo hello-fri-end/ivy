@@ -642,6 +642,7 @@ class Conv2D(Module):
         with_bias=True,
         data_format="NHWC",
         dilations=1,
+        feature_group_count=1,
         device=None,
         v=None,
         dtype=None,
@@ -672,6 +673,9 @@ class Conv2D(Module):
             NHWC" or "NCHW". Defaults to "NHWC".
         dilations
             The dilation factor for each dimension of input. (Default value = 1)
+        feature_group_count
+            split input into groups, in_channels should be divisible by the
+            number of groups. (Default value = 1)
         device
             device on which to create the layer's variables 'cuda:0', 'cuda:1', 'cpu'
             etc. Default is cpu.
@@ -698,6 +702,7 @@ class Conv2D(Module):
         self._with_bias = with_bias
         self._data_format = data_format
         self._dilations = dilations
+        self._feature_group_count = feature_group_count
         Module.__init__(self, device=device, v=v, dtype=dtype)
 
     def _create_variables(self, device, dtype=None):
@@ -756,6 +761,7 @@ class Conv2D(Module):
             self._padding,
             data_format=self._data_format,
             dilations=self._dilations,
+            feature_group_count=self._feature_group_count,
         ) + (self.v.b if self._with_bias else 0)
 
 
@@ -1733,7 +1739,8 @@ class AvgPool3D(Module):
         ceil_mode
             Whether to use ceil or floor for creating the output shape.
         divisor_override
-            If specified, it will be used as divisor, otherwise kernel_size will be used.
+            If specified, it will be used as divisor, otherwise
+            kernel_size will be used.
         """
         self._kernel_size = kernel_size
         self._stride = strides
@@ -1802,7 +1809,8 @@ class AdaptiveAvgPool2d(Module):
         -------
             The output array of the layer.
         """
-        # TODO: test again once adaptive_avg_pool2d is implemnted for the missing backends.
+        # TODO: test again once adaptive_avg_pool2d is implemnted
+        #  for the missing backends.
         return ivy.adaptive_avg_pool2d(
             x,
             self._output_size,

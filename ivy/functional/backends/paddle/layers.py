@@ -117,6 +117,7 @@ def conv2d(
     *,
     data_format: str = "NHWC",
     dilations: Union[int, Tuple[int, int]] = 1,
+    feature_group_count: Optional[int] = 1,
     out: Optional[paddle.Tensor] = None,
 ) -> paddle.Tensor:
     raise IvyNotImplementedException()
@@ -282,7 +283,7 @@ def conv_general_dilated(
             data_format=df,
             stride=strides,
             padding=padding,
-            dilation=dilations,
+            dilations=dilations,
             groups=feature_group_count,
         )
 

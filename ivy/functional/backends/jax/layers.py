@@ -114,6 +114,7 @@ def conv2d(
     *,
     data_format: str = "NHWC",
     dilations: Union[int, Tuple[int, int]] = 1,
+    feature_group_count: Optional[int] = 1,
     out: Optional[JaxArray] = None,
 ) -> JaxArray:
     strides = [strides] * 2 if isinstance(strides, int) else strides
@@ -128,6 +129,7 @@ def conv2d(
         None,
         dilations,
         (data_format, "HWIO", data_format),
+        feature_group_count=feature_group_count,
     )
 
 

@@ -591,6 +591,7 @@ class _ArrayWithLayers(abc.ABC):
         *,
         data_format: str = "NHWC",
         dilations: Union[int, Tuple[int, int]] = 1,
+        feature_group_count: Optional[int] = 1,
         out: Optional[ivy.Array] = None,
     ) -> ivy.Array:
         """
@@ -613,6 +614,9 @@ class _ArrayWithLayers(abc.ABC):
             "NHWC" or "NCHW". Defaults to "NHWC".
         dilations
             The dilation factor for each dimension of input. (Default value = 1)
+        feature_group_count
+            split input into groups, in_channels should be divisible by the
+              number of groups. (Default value = 1)
         out
             optional output array, for writing the result to. It must have a shape that
             the inputs broadcast to.
@@ -646,6 +650,7 @@ class _ArrayWithLayers(abc.ABC):
             padding,
             data_format=data_format,
             dilations=dilations,
+            feature_group_count=feature_group_count,
             out=out,
         )
 

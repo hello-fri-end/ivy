@@ -317,6 +317,7 @@ def x_and_filters(
     dim: int = 2,
     transpose: bool = False,
     depthwise=False,
+    grouped=False,
     general=False,
     bias=False,
     filter_format=None,
@@ -337,7 +338,7 @@ def x_and_filters(
         group_list = list(filter(lambda x: (input_channels % x == 0), group_list))
     else:
         group_list = list(filter(lambda x: (output_channels % x == 0), group_list))
-    fc = draw(st.sampled_from(group_list)) if general else 1
+    fc = draw(st.sampled_from(group_list)) if (general or grouped) else 1
     strides = draw(
         st.one_of(
             st.integers(1, 3), st.lists(st.integers(1, 3), min_size=dim, max_size=dim)
@@ -443,6 +444,7 @@ def x_and_filters(
                 max_value=1.0,
             )
         )
+
     if general:
         data_format = "channel_first" if channel_first else "channel_last"
         if not transpose:
@@ -562,7 +564,7 @@ def test_conv1d_transpose(
 # conv2d
 @handle_test(
     fn_tree="functional.ivy.conv2d",
-    x_f_d_df=x_and_filters(dim=2),
+    x_f_d_df=x_and_filters(dim=2, grouped=True),
     ground_truth_backend="jax",
 )
 def test_conv2d(
@@ -592,6 +594,7 @@ def test_conv2d(
         padding=pad,
         data_format=data_format,
         dilations=dilations,
+        feature_group_count=fc,
     )
 
 

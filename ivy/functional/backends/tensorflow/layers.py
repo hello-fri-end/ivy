@@ -130,12 +130,42 @@ def conv2d(
     *,
     data_format: str = "NHWC",
     dilations: Union[int, Tuple[int, int]] = 1,
+    feature_group_count: Optional[int] = 1,
     out: Optional[Union[tf.Tensor, tf.Variable]] = None,
 ) -> Union[tf.Tensor, tf.Variable]:
     if data_format == "NCHW":
         x = tf.transpose(x, (0, 2, 3, 1))
     x = _pad_before_conv(x, filters, strides, padding, 2, dilations)
-    res = tf.nn.conv2d(x, filters, strides, "VALID", "NHWC", dilations)
+
+    if filters.shape[-2] != (x.shape[-1] // feature_group_count):
+        raise ivy.utils.exceptions.IvyError(
+            f"given feature_group_count {feature_group_count} expected input channel of"
+            f" the filter to be {x.shape[-1] // feature_group_count} but got"
+            f" {filters.shape[-2]}"
+        )
+
+    if x.shape[-1] % feature_group_count != 0:
+        raise ivy.utils.exceptions.IvyError(
+            "input channel should be divisible by feature group count"
+            f" {feature_group_count} but got input channel {x.shape[-1]}"
+        )
+
+    res = tf.concat(
+        [
+            tf.nn.conv2d(
+                x[..., j : j + filters.shape[-2] // feature_group_count],
+                filters[..., j : j + filters.shape[-2] // feature_group_count, :],
+                strides,
+                "VALID",
+                "NHWC",
+                dilations,
+            )
+            for j in range(
+                0, filters.shape[-2], filters.shape[-2] // feature_group_count
+            )
+        ],
+        axis=-1,
+    )
     if data_format == "NCHW":
         return tf.transpose(res, (0, 3, 1, 2))
     return res

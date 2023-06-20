@@ -1027,6 +1027,7 @@ def conv2d(
     *,
     data_format: str = "NHWC",
     dilations: Union[int, Tuple[int, int]] = 1,
+    feature_group_count: Optional[int] = 1,
     out: Optional[ivy.Array] = None,
 ) -> ivy.Array:
     """
@@ -1050,6 +1051,9 @@ def conv2d(
         "NCHW" corresponds to input with shape (batch_size, channels, height, width).
     dilations
         The dilation factor for each dimension of input. (Default value = 1)
+    feature_group_count
+        split input into groups, in_channels should be divisible by the
+        number of groups. (Default value = 1)
     out
         optional output array, for writing the result to. It must have a shape that the
         inputs broadcast to.
@@ -1136,6 +1140,7 @@ def conv2d(
         padding,
         data_format=data_format,
         dilations=dilations,
+        feature_group_count=feature_group_count,
         out=out,
     )
 
