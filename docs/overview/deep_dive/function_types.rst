@@ -46,6 +46,7 @@ These four function categorizations are all **mutually exclusive**, and combined
 
 Primary Functions
 -----------------
+-----------------
 
 *Primary* functions are essentially the lowest level building blocks in Ivy.
 Each primary function has a unique backend-specific implementation for each backend specified in :mod:`ivy/functional/backends/backend_name/category_name.py`.
@@ -86,6 +87,7 @@ The reason that the Ivy implementation has type hint :code:`Union[ivy.Array, ivy
 Likewise, the reason that the :code:`out` argument in the Ivy implementation has array type hint :class:`ivy.Array` whereas :code:`x` has :code:`Union[ivy.Array, ivy.NativeArray]` is also explained in the :ref:`Arrays` section.
 
 Compositional Functions
+-----------------------
 -----------------------
 
 *Compositional* functions on the other hand **do not** have backend-specific implementations.
@@ -183,6 +185,7 @@ When the backend is set, we `handle`_ these wrappers for the primary implementat
 
 Standalone Functions
 ---------------------
+---------------------
 
 *Standalone* functions are functions which do not reference any other *primary*, *compositional* or *mixed* functions whatsoever.
 
@@ -195,6 +198,7 @@ All of these either: (a) reference no other function at all, (b) only reference 
 A few other examples outside of the :mod:`nest.py` module are: `ivy.default`_ which simply returns :code:`x` if it exists else the default value, `ivy.cache_fn`_ which wraps a function such that when :code:`cache=True` is passed, then a previously cached output is returned, and `ivy.stable_divide`_ which simply adds a small constant to the denominator of the division.
 
 Nestable Functions
+------------------
 ------------------
 
 *Nestable* functions are functions which can accept :class:`ivy.Container` instances in place of **any** of the arguments.
@@ -221,6 +225,7 @@ This function wrapping process is covered in a bit more detail in the :ref:`Func
 Nestable functions are explained in more detail in the :ref:`Containers` section.
 
 Convenience Functions
+---------------------
 ---------------------
 
 A final group of functions are the *convenience* functions (briefly mentioned above).
