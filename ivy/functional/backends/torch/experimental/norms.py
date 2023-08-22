@@ -128,7 +128,7 @@ def instance_norm(
 
 
 instance_norm.partial_mixed_handler = (
-    lambda x, mean, variance, scale, offset, **kwargs: (
+    lambda x, mean, variance, scale=None, offset=None, **kwargs: (
         x.ndim > 1
         and mean.ndim == 1
         and variance.ndim == 1
